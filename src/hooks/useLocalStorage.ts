@@ -5,10 +5,12 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
   const [storedValue, setStoredValue] = useState<T>(initialValue);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const item = window.localStorage.getItem(key);
       if (item) setStoredValue(JSON.parse(item));
     } catch {}
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [key]);
 
   const setValue = (value: T | ((prev: T) => T)) => {

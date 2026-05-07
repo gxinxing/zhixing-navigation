@@ -2,7 +2,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { getJobTemplates } from '@/lib/storage';
+import { getJobTemplates, getCompletionRecords } from '@/lib/storage';
 
 function CompleteContent() {
   const searchParams = useSearchParams();
@@ -13,6 +13,7 @@ function CompleteContent() {
   const [duration, setDuration] = useState('');
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     const jobs = getJobTemplates();
     const job = jobs.find(j => j.id === jobId);
     if (job) {
@@ -22,7 +23,7 @@ function CompleteContent() {
         setTaskIcon(task.icon);
       }
     }
-    const completions = JSON.parse(localStorage.getItem('zhixing_completions') || '[]');
+    const completions = getCompletionRecords();
     const last = completions[completions.length - 1];
     if (last) {
       const start = new Date(last.startTime).getTime();
@@ -30,6 +31,7 @@ function CompleteContent() {
       const mins = Math.round((end - start) / 60000);
       setDuration(mins > 0 ? `${mins} 分钟` : '不到1分钟');
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [taskId, jobId]);
 
   useEffect(() => {
@@ -43,8 +45,13 @@ function CompleteContent() {
     canvas.style.zIndex = '30';
     document.body.appendChild(canvas);
     const ctx = canvas.getContext('2d')!;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
 
     const particles: { x: number; y: number; vx: number; vy: number; color: string; size: number; life: number }[] = [];
     const colors = ['#4F46E5', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
@@ -62,12 +69,13 @@ function CompleteContent() {
     }
 
     let animId: number;
+    let alive = true;
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      let alive = false;
-      particles.forEach(p => {
-        if (p.life <= 0) return;
-        alive = true;
+      let hasAlive = false;
+      for (const p of particles) {
+        if (p.life <= 0) continue;
+        hasAlive = true;
         p.x += p.vx;
         p.y += p.vy;
         p.vy += 0.15;
@@ -75,17 +83,17 @@ function CompleteContent() {
         ctx.globalAlpha = p.life;
         ctx.fillStyle = p.color;
         ctx.fillRect(p.x, p.y, p.size, p.size);
-      });
-      ctx.globalAlpha = 1;
-      if (alive) animId = requestAnimationFrame(animate);
-      else {
-        canvas.remove();
       }
+      ctx.globalAlpha = 1;
+      if (hasAlive && alive) animId = requestAnimationFrame(animate);
+      else canvas.remove();
     }
     animate();
 
     return () => {
+      alive = false;
       cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
       canvas.remove();
     };
   }, []);

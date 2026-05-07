@@ -1,12 +1,13 @@
 'use client';
 import { useState, useCallback } from 'react';
-import { Step, CompletionRecord } from '@/types';
+import { Step } from '@/types';
 import { addCompletionRecord } from '@/lib/storage';
 
 export function useTaskProgress(taskId: string, taskName: string, jobName: string, steps: Step[]) {
   const [currentStep, setCurrentStep] = useState(0);
   const [startTime] = useState(() => new Date().toISOString());
   const [isComplete, setIsComplete] = useState(false);
+  const [stepKey, setStepKey] = useState(0);
 
   const completeCurrentStep = useCallback(() => {
     if (currentStep < steps.length - 1) {
@@ -29,7 +30,7 @@ export function useTaskProgress(taskId: string, taskName: string, jobName: strin
   }, [currentStep, steps.length, taskId, jobName, taskName, startTime]);
 
   const resetStep = useCallback(() => {
-    setCurrentStep(prev => prev);
+    setStepKey(prev => prev + 1);
   }, []);
 
   const progress = steps.length > 0 ? ((currentStep + 1) / steps.length) * 100 : 0;
@@ -41,6 +42,7 @@ export function useTaskProgress(taskId: string, taskName: string, jobName: strin
     isComplete,
     completeCurrentStep,
     resetStep,
+    stepKey,
     totalSteps: steps.length,
   };
 }

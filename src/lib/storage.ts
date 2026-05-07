@@ -1,4 +1,4 @@
-import { JobTemplate, CompletionRecord, MoodRecord, MoodType, HelpRecord, HelpType } from '@/types';
+import { JobTemplate, CompletionRecord, MoodRecord, MoodType, HelpRecord } from '@/types';
 import { jobTemplates } from '@/data/templates';
 
 const PREFIX = 'zhixing_';

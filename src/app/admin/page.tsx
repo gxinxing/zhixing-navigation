@@ -1,25 +1,33 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getTodayStats, getCompletionRecords, getMoodRecords, getHelpRecords, getMoodTrend } from '@/lib/storage';
-import { CompletionRecord, MoodRecord, HelpRecord } from '@/types';
+import { getCompletionRecords, getHelpRecords, getMoodTrend } from '@/lib/storage';
+import { CompletionRecord, HelpRecord } from '@/types';
 
 export default function AdminPage() {
   const [stats, setStats] = useState({ completions: 0, helpCount: 0, avgTime: 0 });
   const [completions, setCompletions] = useState<CompletionRecord[]>([]);
-  const [moods, setMoods] = useState<MoodRecord[]>([]);
   const [helpRecords, setHelpRecords] = useState<HelpRecord[]>([]);
   const [moodTrend, setMoodTrend] = useState<{ date: string; avg: number }[]>([]);
 
   useEffect(() => {
-    setStats(getTodayStats());
-    setCompletions(getCompletionRecords().slice(-20).reverse());
-    setMoods(getMoodRecords().slice(-20).reverse());
-    setHelpRecords(getHelpRecords().slice(-20).reverse());
+    /* eslint-disable react-hooks/set-state-in-effect */
+    const completions = getCompletionRecords();
+    const helpRecords = getHelpRecords();
+    const today = new Date().toISOString().slice(0, 10);
+    const todayCompletions = completions.filter(r => r.startTime.slice(0, 10) === today);
+    const todayHelp = helpRecords.filter(r => r.timestamp.slice(0, 10) === today);
+    let avgTime = 0;
+    if (todayCompletions.length > 0) {
+      const totalTime = todayCompletions.reduce((sum, r) => sum + (new Date(r.endTime).getTime() - new Date(r.startTime).getTime()), 0);
+      avgTime = totalTime / todayCompletions.length / 1000;
+    }
+    setStats({ completions: todayCompletions.length, helpCount: todayHelp.length, avgTime });
+    setCompletions(completions.slice(-20).reverse());
+    setHelpRecords(helpRecords.slice(-20).reverse());
     setMoodTrend(getMoodTrend(7));
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
-
-  const avgTimeMin = Math.round(stats.avgTime / 60);
 
   const moodEmoji = (avg: number) => {
     if (avg >= 4.5) return '😄';
@@ -48,7 +56,7 @@ export default function AdminPage() {
           <p className="text-sm text-[#64748B] mt-1">求助次数</p>
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 text-center">
-          <p className="text-3xl font-bold text-[#22C55E]">{avgTimeMin}</p>
+          <p className="text-3xl font-bold text-[#22C55E]">{Math.round(stats.avgTime / 60)}</p>
           <p className="text-sm text-[#64748B] mt-1">平均用时(分)</p>
         </div>
       </div>

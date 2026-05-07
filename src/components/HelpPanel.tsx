@@ -1,4 +1,5 @@
 'use client';
+import { memo } from 'react';
 
 interface HelpPanelProps {
   onUnclear: () => void;
@@ -7,7 +8,7 @@ interface HelpPanelProps {
   onClose: () => void;
 }
 
-export default function HelpPanel({ onUnclear, onRedo, onCallHelp, onClose }: HelpPanelProps) {
+export default memo(function HelpPanel({ onUnclear, onRedo, onCallHelp, onClose }: HelpPanelProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm animate-fade-in" onClick={e => e.stopPropagation()}>
@@ -45,4 +46,4 @@ export default function HelpPanel({ onUnclear, onRedo, onCallHelp, onClose }: He
       </div>
     </div>
   );
-}
+})

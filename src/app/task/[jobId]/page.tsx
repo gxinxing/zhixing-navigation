@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { JobTemplate, CompletionRecord } from '@/types';
@@ -12,11 +12,15 @@ export default function TaskListPage() {
   const [completions, setCompletions] = useState<CompletionRecord[]>([]);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     const jobs = getJobTemplates();
     const found = jobs.find(j => j.id === jobId);
     if (found) setJob(found);
     setCompletions(getCompletionRecords());
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [jobId]);
+
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   if (!job) {
     return (
@@ -38,7 +42,7 @@ export default function TaskListPage() {
       <div className="flex flex-col gap-4 flex-1">
         {job.tasks.map((task) => {
           const completed = completions.find(
-            c => c.taskId === task.id && c.startTime.slice(0, 10) === new Date().toISOString().slice(0, 10)
+            c => c.taskId === task.id && c.startTime.slice(0, 10) === today
           );
           return (
             <Link key={task.id} href={`/step/${task.id}?jobId=${jobId}`} className="block">

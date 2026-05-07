@@ -1,4 +1,5 @@
 'use client';
+import { memo } from 'react';
 import { MoodType } from '@/types';
 
 const moods: { type: MoodType; emoji: string; label: string }[] = [
@@ -14,7 +15,7 @@ interface MoodSelectorProps {
   onSelect: (mood: MoodType) => void;
 }
 
-export default function MoodSelector({ selected, onSelect }: MoodSelectorProps) {
+export default memo(function MoodSelector({ selected, onSelect }: MoodSelectorProps) {
   return (
     <div className="flex justify-center gap-4">
       {moods.map((mood) => (
@@ -33,4 +34,4 @@ export default function MoodSelector({ selected, onSelect }: MoodSelectorProps) 
       ))}
     </div>
   );
-}
+})

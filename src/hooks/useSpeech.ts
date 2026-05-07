@@ -1,8 +1,29 @@
 'use client';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export function useSpeech() {
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        voicesRef.current = voices;
+        setVoicesLoaded(true);
+      }
+    };
+
+    loadVoices();
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+
+    return () => {
+      window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+      window.speechSynthesis.cancel();
+    };
+  }, []);
 
   const speak = useCallback((text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -11,10 +32,8 @@ export function useSpeech() {
     utterance.lang = 'zh-CN';
     utterance.rate = 0.9;
     utterance.pitch = 1;
-    const voices = window.speechSynthesis.getVoices();
-    const zhVoice = voices.find(v => v.lang.startsWith('zh'));
+    const zhVoice = voicesRef.current.find(v => v.lang.startsWith('zh'));
     if (zhVoice) utterance.voice = zhVoice;
-    utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
   }, []);
 
@@ -24,12 +43,5 @@ export function useSpeech() {
     }
   }, []);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.getVoices();
-    }
-    return () => { stop(); };
-  }, [stop]);
-
-  return { speak, stop };
+  return { speak, stop, voicesLoaded };
 }

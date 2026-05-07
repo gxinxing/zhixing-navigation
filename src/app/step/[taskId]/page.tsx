@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback, Suspense } from 'react';
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import StepCard from '@/components/StepCard';
@@ -20,10 +20,12 @@ function StepPageContent() {
   const [task, setTask] = useState<Task | null>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [showWellDone, setShowWellDone] = useState(false);
+  const wellDoneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { speak, stop } = useSpeech();
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     const jobs = getJobTemplates();
     const foundJob = jobs.find(j => j.id === jobId);
     if (foundJob) {
@@ -31,6 +33,7 @@ function StepPageContent() {
       const foundTask = foundJob.tasks.find(t => t.id === taskId);
       if (foundTask) setTask(foundTask);
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [taskId, jobId]);
 
   const {
@@ -40,6 +43,7 @@ function StepPageContent() {
     isComplete,
     completeCurrentStep,
     resetStep,
+    stepKey,
     totalSteps,
   } = useTaskProgress(
     taskId,
@@ -54,22 +58,31 @@ function StepPageContent() {
       const timer = setTimeout(() => speak(text), 300);
       return () => clearTimeout(timer);
     }
-  }, [currentStep, currentStepData, isComplete, speak]);
+  }, [currentStep, stepKey, currentStepData, isComplete, speak]);
 
   useEffect(() => {
     if (isComplete) {
       stop();
       const timer = setTimeout(() => {
-        router.push(`/complete?taskId=${taskId}&jobId=${jobId}&startTime=${encodeURIComponent(new Date().toISOString())}`);
+        router.push(`/complete?taskId=${taskId}&jobId=${jobId}`);
       }, 500);
       return () => clearTimeout(timer);
     }
   }, [isComplete, taskId, jobId, router, stop]);
 
+  useEffect(() => {
+    return () => {
+      if (wellDoneTimerRef.current) {
+        clearTimeout(wellDoneTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleComplete = useCallback(() => {
     setShowWellDone(true);
-    setTimeout(() => {
+    wellDoneTimerRef.current = setTimeout(() => {
       setShowWellDone(false);
+      wellDoneTimerRef.current = null;
       completeCurrentStep();
     }, 800);
   }, [completeCurrentStep]);
@@ -123,6 +136,7 @@ function StepPageContent() {
       </div>
 
       <StepCard
+        key={stepKey}
         step={currentStepData}
         currentStep={currentStep}
         totalSteps={totalSteps}

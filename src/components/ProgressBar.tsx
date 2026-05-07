@@ -1,4 +1,5 @@
 'use client';
+import { memo } from 'react';
 
 interface ProgressBarProps {
   current: number;
@@ -6,7 +7,7 @@ interface ProgressBarProps {
   progress: number;
 }
 
-export default function ProgressBar({ current, total, progress }: ProgressBarProps) {
+export default memo(function ProgressBar({ current, total, progress }: ProgressBarProps) {
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-2">
@@ -20,4 +21,4 @@ export default function ProgressBar({ current, total, progress }: ProgressBarPro
       </div>
     </div>
   );
-}
+})

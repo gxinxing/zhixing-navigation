@@ -10,11 +10,13 @@ export default function HomePage() {
   const [greeting, setGreeting] = useState('你好');
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setJobs(getJobTemplates());
     const hour = new Date().getHours();
     if (hour < 12) setGreeting('早上好');
     else if (hour < 18) setGreeting('下午好');
     else setGreeting('晚上好');
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   return (

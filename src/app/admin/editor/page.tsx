@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getJobTemplates, saveJobTemplates } from '@/lib/storage';
-import { JobTemplate, Task, Step } from '@/types';
+import { JobTemplate, Step } from '@/types';
 
 export default function EditorPage() {
   const [templates, setTemplates] = useState<JobTemplate[]>([]);
@@ -11,7 +11,9 @@ export default function EditorPage() {
   const [previewMode, setPreviewMode] = useState(false);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setTemplates(getJobTemplates());
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   const selectedJob = templates.find(j => j.id === selectedJobId);
@@ -22,63 +24,78 @@ export default function EditorPage() {
     alert('保存成功！');
   };
 
+  const cloneTemplates = (prev: JobTemplate[], jobIndex: number) => {
+    const next = [...prev];
+    next[jobIndex] = { ...next[jobIndex], tasks: [...next[jobIndex].tasks] };
+    return next;
+  };
+
   const updateStep = (stepIndex: number, field: keyof Step, value: string) => {
     if (!selectedJob || editingTaskIndex < 0) return;
-    const newTemplates = [...templates];
-    const jobIndex = newTemplates.findIndex(j => j.id === selectedJobId);
-    const newSteps = [...newTemplates[jobIndex].tasks[editingTaskIndex].steps];
-    newSteps[stepIndex] = { ...newSteps[stepIndex], [field]: value };
-    newTemplates[jobIndex].tasks[editingTaskIndex] = {
-      ...newTemplates[jobIndex].tasks[editingTaskIndex],
-      steps: newSteps,
-    };
-    setTemplates(newTemplates);
+    setTemplates(prev => {
+      const jobIndex = prev.findIndex(j => j.id === selectedJobId);
+      const next = cloneTemplates(prev, jobIndex);
+      const steps = [...next[jobIndex].tasks[editingTaskIndex].steps];
+      steps[stepIndex] = { ...steps[stepIndex], [field]: value };
+      next[jobIndex].tasks[editingTaskIndex] = {
+        ...next[jobIndex].tasks[editingTaskIndex],
+        steps,
+      };
+      return next;
+    });
   };
 
   const addStep = () => {
     if (!selectedJob || editingTaskIndex < 0) return;
-    const newTemplates = [...templates];
-    const jobIndex = newTemplates.findIndex(j => j.id === selectedJobId);
-    const steps = newTemplates[jobIndex].tasks[editingTaskIndex].steps;
-    const newStep: Step = {
-      order: steps.length + 1,
-      title: '新步骤',
-      description: '步骤说明',
-    };
-    newTemplates[jobIndex].tasks[editingTaskIndex] = {
-      ...newTemplates[jobIndex].tasks[editingTaskIndex],
-      steps: [...steps, newStep],
-    };
-    setTemplates(newTemplates);
+    setTemplates(prev => {
+      const jobIndex = prev.findIndex(j => j.id === selectedJobId);
+      const next = cloneTemplates(prev, jobIndex);
+      const steps = [...next[jobIndex].tasks[editingTaskIndex].steps];
+      const newStep: Step = {
+        order: steps.length + 1,
+        title: '新步骤',
+        description: '步骤说明',
+      };
+      next[jobIndex].tasks[editingTaskIndex] = {
+        ...next[jobIndex].tasks[editingTaskIndex],
+        steps: [...steps, newStep],
+      };
+      return next;
+    });
   };
 
   const removeStep = (stepIndex: number) => {
     if (!selectedJob || editingTaskIndex < 0) return;
-    const newTemplates = [...templates];
-    const jobIndex = newTemplates.findIndex(j => j.id === selectedJobId);
-    const steps = newTemplates[jobIndex].tasks[editingTaskIndex].steps.filter((_, i) => i !== stepIndex);
-    steps.forEach((s, i) => { s.order = i + 1; });
-    newTemplates[jobIndex].tasks[editingTaskIndex] = {
-      ...newTemplates[jobIndex].tasks[editingTaskIndex],
-      steps,
-    };
-    setTemplates(newTemplates);
+    setTemplates(prev => {
+      const jobIndex = prev.findIndex(j => j.id === selectedJobId);
+      const next = cloneTemplates(prev, jobIndex);
+      const steps = next[jobIndex].tasks[editingTaskIndex].steps
+        .filter((_, i) => i !== stepIndex)
+        .map((s, i) => ({ ...s, order: i + 1 }));
+      next[jobIndex].tasks[editingTaskIndex] = {
+        ...next[jobIndex].tasks[editingTaskIndex],
+        steps,
+      };
+      return next;
+    });
   };
 
   const moveStep = (stepIndex: number, direction: 'up' | 'down') => {
     if (!selectedJob || editingTaskIndex < 0) return;
-    const newTemplates = [...templates];
-    const jobIndex = newTemplates.findIndex(j => j.id === selectedJobId);
-    const steps = [...newTemplates[jobIndex].tasks[editingTaskIndex].steps];
-    const targetIndex = direction === 'up' ? stepIndex - 1 : stepIndex + 1;
-    if (targetIndex < 0 || targetIndex >= steps.length) return;
-    [steps[stepIndex], steps[targetIndex]] = [steps[targetIndex], steps[stepIndex]];
-    steps.forEach((s, i) => { s.order = i + 1; });
-    newTemplates[jobIndex].tasks[editingTaskIndex] = {
-      ...newTemplates[jobIndex].tasks[editingTaskIndex],
-      steps,
-    };
-    setTemplates(newTemplates);
+    setTemplates(prev => {
+      const jobIndex = prev.findIndex(j => j.id === selectedJobId);
+      const next = cloneTemplates(prev, jobIndex);
+      const steps = next[jobIndex].tasks[editingTaskIndex].steps.map(s => ({ ...s }));
+      const targetIndex = direction === 'up' ? stepIndex - 1 : stepIndex + 1;
+      if (targetIndex < 0 || targetIndex >= steps.length) return prev;
+      [steps[stepIndex], steps[targetIndex]] = [steps[targetIndex], steps[stepIndex]];
+      steps.forEach((s, i) => { s.order = i + 1; });
+      next[jobIndex].tasks[editingTaskIndex] = {
+        ...next[jobIndex].tasks[editingTaskIndex],
+        steps,
+      };
+      return next;
+    });
   };
 
   return (
