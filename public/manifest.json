@@ -1,0 +1,17 @@
+{
+  "name": "知行 - 岗位任务导航器",
+  "short_name": "知行",
+  "description": "把复杂工作流程变成跟着做的图文步骤卡片",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#4F46E5",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
