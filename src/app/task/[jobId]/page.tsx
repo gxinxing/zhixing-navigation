@@ -76,8 +76,8 @@ export default function TaskListPage() {
         href="/mood?context=before"
         className="mt-6 bg-white border-2 border-[#F59E0B] text-[#F59E0B] rounded-2xl p-4 shadow-sm flex items-center justify-center gap-3 btn-press"
       >
-        <span className="text-2xl">🆘</span>
-        <span className="text-xl font-semibold">需要帮助</span>
+        <span className="text-2xl">😊</span>
+        <span className="text-xl font-semibold">今天感觉怎样？</span>
       </Link>
     </div>
   );

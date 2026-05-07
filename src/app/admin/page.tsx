@@ -12,19 +12,19 @@ export default function AdminPage() {
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
-    const completions = getCompletionRecords();
-    const helpRecords = getHelpRecords();
+    const allCompletions = getCompletionRecords();
+    const allHelpRecords = getHelpRecords();
     const today = new Date().toISOString().slice(0, 10);
-    const todayCompletions = completions.filter(r => r.startTime.slice(0, 10) === today);
-    const todayHelp = helpRecords.filter(r => r.timestamp.slice(0, 10) === today);
+    const todayCompletions = allCompletions.filter(r => r.startTime.slice(0, 10) === today);
+    const todayHelp = allHelpRecords.filter(r => r.timestamp.slice(0, 10) === today);
     let avgTime = 0;
     if (todayCompletions.length > 0) {
       const totalTime = todayCompletions.reduce((sum, r) => sum + (new Date(r.endTime).getTime() - new Date(r.startTime).getTime()), 0);
       avgTime = totalTime / todayCompletions.length / 1000;
     }
     setStats({ completions: todayCompletions.length, helpCount: todayHelp.length, avgTime });
-    setCompletions(completions.slice(-20).reverse());
-    setHelpRecords(helpRecords.slice(-20).reverse());
+    setCompletions(allCompletions.slice(-20).reverse());
+    setHelpRecords(allHelpRecords.slice(-20).reverse());
     setMoodTrend(getMoodTrend(7));
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);

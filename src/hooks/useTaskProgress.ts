@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Step } from '@/types';
 import { addCompletionRecord } from '@/lib/storage';
 
@@ -8,26 +8,37 @@ export function useTaskProgress(taskId: string, taskName: string, jobName: strin
   const [startTime] = useState(() => new Date().toISOString());
   const [isComplete, setIsComplete] = useState(false);
   const [stepKey, setStepKey] = useState(0);
+  const completingRef = useRef(false);
 
   const completeCurrentStep = useCallback(() => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-      return false;
-    } else {
-      const endTime = new Date().toISOString();
-      addCompletionRecord({
-        taskId,
-        jobName,
-        taskName,
-        startTime,
-        endTime,
-        stepsCompleted: steps.length,
-        totalSteps: steps.length,
-      });
-      setIsComplete(true);
-      return true;
-    }
-  }, [currentStep, steps.length, taskId, jobName, taskName, startTime]);
+    if (completingRef.current) return false;
+    completingRef.current = true;
+
+    let advanced = false;
+    setCurrentStep(prev => {
+      if (prev < steps.length - 1) {
+        advanced = true;
+        completingRef.current = false;
+        return prev + 1;
+      } else {
+        const endTime = new Date().toISOString();
+        addCompletionRecord({
+          taskId,
+          jobName,
+          taskName,
+          startTime,
+          endTime,
+          stepsCompleted: steps.length,
+          totalSteps: steps.length,
+        });
+        setIsComplete(true);
+        completingRef.current = false;
+        return prev;
+      }
+    });
+
+    return !advanced;
+  }, [steps.length, taskId, jobName, taskName, startTime]);
 
   const resetStep = useCallback(() => {
     setStepKey(prev => prev + 1);
