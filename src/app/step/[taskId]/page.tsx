@@ -148,7 +148,7 @@ function StepPageContent() {
 
       {showWellDone && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-40">
-          <div className="animate-bounce-in text-center">
+          <div className="animate-check-pop text-center">
             <span className="text-7xl block mb-4">✅</span>
             <p className="text-3xl font-bold text-white">做得好！</p>
           </div>

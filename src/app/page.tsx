@@ -21,7 +21,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] px-4 py-6 flex flex-col">
-      <h1 className="text-2xl font-bold text-[#1E293B] mb-6">
+      <h1 className="text-3xl font-bold text-[#1E293B] mb-6 leading-relaxed">
         {greeting}！今天做什么工作？
       </h1>
 
@@ -33,7 +33,7 @@ export default function HomePage() {
 
       <Link
         href="/mood?context=before"
-        className="mt-6 bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-center gap-3 btn-press"
+        className="mt-6 bg-white rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex items-center justify-center gap-3 btn-press"
       >
         <span className="text-2xl">😊</span>
         <span className="text-lg font-semibold text-[#64748B]">今天感觉怎样？</span>

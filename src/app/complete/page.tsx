@@ -11,6 +11,8 @@ function CompleteContent() {
   const [taskName, setTaskName] = useState('');
   const [taskIcon, setTaskIcon] = useState('');
   const [duration, setDuration] = useState('');
+  const encouragements = ['太棒了！🎉', '你做到了！✅', '继续加油！💪', '一步一步，你在进步！🌟'];
+  const [encouragement] = useState(() => encouragements[Math.floor(Math.random() * encouragements.length)]);
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -100,27 +102,27 @@ function CompleteContent() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center px-6">
-      <div className="animate-bounce-in text-center">
+      <div className="animate-bounce-in text-center bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-8 w-full max-w-sm mb-6">
         <span className="text-8xl block mb-6">🎉</span>
-        <h1 className="text-4xl font-bold text-[#1E293B] mb-4">太棒了！</h1>
+        <h1 className="text-3xl font-bold text-[#1E293B] mb-4">{encouragement}</h1>
         <p className="text-xl text-[#64748B] mb-2">
           你完成了「{taskIcon} {taskName}」
         </p>
         {duration && (
-          <p className="text-lg text-[#64748B] mb-8">用了 {duration}</p>
+          <p className="text-lg text-[#64748B]">用了 {duration}</p>
         )}
       </div>
 
-      <div className="flex flex-col gap-3 w-full max-w-sm mt-8">
+      <div className="flex flex-col gap-3 w-full max-w-sm">
         <Link
           href={`/mood?context=after&jobId=${jobId}`}
-          className="w-full bg-[#22C55E] text-white rounded-2xl py-4 text-xl font-semibold text-center shadow-lg btn-press min-h-[56px]"
+          className="w-full bg-[#22C55E] text-white rounded-2xl py-4 text-xl font-semibold text-center shadow-[0_4px_12px_rgba(34,197,94,0.3)] btn-press min-h-[56px]"
         >
           😊 打卡心情
         </Link>
         <Link
           href={`/task/${jobId}`}
-          className="w-full bg-white text-[#4F46E5] rounded-2xl py-4 text-xl font-semibold text-center shadow-sm border border-gray-200 btn-press min-h-[56px]"
+          className="w-full bg-white text-[#4F46E5] rounded-2xl py-4 text-xl font-semibold text-center shadow-[0_2px_8px_rgba(0,0,0,0.08)] btn-press min-h-[56px]"
         >
           返回任务列表
         </Link>
