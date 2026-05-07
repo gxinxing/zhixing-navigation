@@ -9,42 +9,44 @@ interface ProgressBarProps {
 
 export default memo(function ProgressBar({ current, total, progress }: ProgressBarProps) {
   return (
-    <div className="w-full px-4 pt-3 pb-2">
-      {total <= 7 ? (
-        <div className="flex items-center gap-1 mb-3 overflow-x-auto">
+    <div className="w-full px-4 pt-2 pb-1">
+      {total <= 8 ? (
+        <div className="flex items-center gap-0.5 mb-3">
           {Array.from({ length: total }, (_, i) => {
             const stepNum = i + 1;
             const isCompleted = stepNum < current;
             const isCurrent = stepNum === current;
             return (
-              <div key={i} className="flex items-center gap-1 shrink-0">
+              <div key={i} className="flex items-center gap-0.5 shrink-0">
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black transition-all duration-400 ${
                     isCompleted
-                      ? 'bg-[#4F46E5] text-white'
+                      ? 'bg-gradient-to-br from-[#4F46E5] to-[#6366F1] text-white shadow-[0_2px_8px_rgba(79,70,229,0.4)]'
                       : isCurrent
-                      ? 'border-[2px] border-[#4F46E5] text-[#4F46E5] bg-white'
-                      : 'border-2 border-[#CBD5E1] text-[#CBD5E1] bg-white'
+                      ? 'bg-white border-[2.5px] border-[#4F46E5] text-[#4F46E5] shadow-[0_2px_6px_rgba(79,70,229,0.2)]'
+                      : 'bg-gray-100 border-[2px] border-gray-200 text-gray-400'
                   }`}
                 >
-                  {isCompleted ? '✅' : stepNum}
+                  {isCompleted ? '✓' : stepNum}
                 </div>
                 {i < total - 1 && (
-                  <div className={`w-3 h-[2px] ${isCompleted ? 'bg-[#4F46E5]' : 'bg-[#E2E8F0]'}`} />
+                  <div className={`w-2 h-[3px] rounded-full transition-all duration-400 ${
+                    isCompleted ? 'bg-gradient-to-r from-[#4F46E5] to-[#6366F1]' : 'bg-gray-200'
+                  }`} />
                 )}
               </div>
             );
           })}
         </div>
       ) : (
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-medium text-[#4F46E5]">第 {current} 步</span>
-          <span className="text-sm text-[#64748B]">共 {total} 步</span>
+        <div className="flex items-center justify-between mb-3 bg-white/60 backdrop-blur-sm rounded-full px-4 py-2">
+          <span className="text-sm font-bold text-[#4F46E5]">第 {current} 步</span>
+          <span className="text-xs text-[#64748B]">共 {total} 步</span>
         </div>
       )}
-      <div className="w-full bg-[#E2E8F0] rounded-full h-[6px]">
+      <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
         <div
-          className="bg-[#4F46E5] h-[6px] rounded-full transition-all duration-300 ease-out"
+          className="h-full rounded-full bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#818CF8] transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>

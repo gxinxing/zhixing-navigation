@@ -55,18 +55,20 @@ function CompleteContent() {
     resize();
     window.addEventListener('resize', resize);
 
-    const particles: { x: number; y: number; vx: number; vy: number; color: string; size: number; life: number }[] = [];
-    const colors = ['#4F46E5', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
+    const particles: { x: number; y: number; vx: number; vy: number; color: string; size: number; life: number; rotation: number; rotSpeed: number }[] = [];
+    const colors = ['#4F46E5', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
 
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 120; i++) {
       particles.push({
         x: canvas.width / 2,
         y: canvas.height / 2,
-        vx: (Math.random() - 0.5) * 12,
-        vy: (Math.random() - 0.5) * 12 - 4,
+        vx: (Math.random() - 0.5) * 16,
+        vy: (Math.random() - 0.5) * 16 - 5,
         color: colors[Math.floor(Math.random() * colors.length)],
-        size: Math.random() * 6 + 3,
+        size: Math.random() * 8 + 4,
         life: 1,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.2,
       });
     }
 
@@ -80,11 +82,17 @@ function CompleteContent() {
         hasAlive = true;
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.15;
-        p.life -= 0.008;
-        ctx.globalAlpha = p.life;
+        p.vy += 0.18;
+        p.vx *= 0.995;
+        p.life -= 0.006;
+        p.rotation += p.rotSpeed;
+        ctx.save();
+        ctx.globalAlpha = p.life * 0.9;
         ctx.fillStyle = p.color;
-        ctx.fillRect(p.x, p.y, p.size, p.size);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
       }
       ctx.globalAlpha = 1;
       if (hasAlive && alive) animId = requestAnimationFrame(animate);
@@ -101,30 +109,48 @@ function CompleteContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center px-6">
-      <div className="animate-bounce-in text-center bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-8 w-full max-w-sm mb-6">
-        <span className="text-8xl block mb-6">🎉</span>
-        <h1 className="text-3xl font-bold text-[#1E293B] mb-4">{encouragement}</h1>
-        <p className="text-xl text-[#64748B] mb-2">
-          你完成了「{taskIcon} {taskName}」
-        </p>
-        {duration && (
-          <p className="text-lg text-[#64748B]">用了 {duration}</p>
-        )}
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-8 relative">
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-1/4 w-32 h-32 bg-gradient-to-br from-green-200/30 to-emerald-200/20 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-1/4 w-24 h-24 bg-gradient-to-br from-indigo-200/30 to-purple-200/20 rounded-full blur-3xl" />
       </div>
 
-      <div className="flex flex-col gap-3 w-full max-w-sm">
+      <div className="relative z-10 animate-bounce-in">
+        <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.1)] border border-white/80 p-8 w-full max-w-sm text-center">
+          <div className="text-8xl mb-4 animate-float">🎉</div>
+          <h1 className="text-3xl font-bold text-[#1E293B] mb-2">{encouragement}</h1>
+          <p className="text-lg text-[#64748B] mb-1">
+            你完成了
+          </p>
+          <p className="text-xl font-bold text-[#4F46E5] mb-3">
+            {taskIcon} {taskName}
+          </p>
+          {duration && (
+            <div className="bg-green-50 border border-green-200 rounded-2xl px-4 py-2 mb-2">
+              <p className="text-green-700 font-semibold">⏱️ 用了 {duration}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-3 w-full max-w-sm mt-6 relative z-10 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
         <Link
           href={`/mood?context=after&jobId=${jobId}`}
-          className="w-full bg-[#22C55E] text-white rounded-2xl py-4 text-xl font-semibold text-center shadow-[0_4px_12px_rgba(34,197,94,0.3)] btn-press min-h-[56px]"
+          className="w-full bg-gradient-to-r from-[#22C55E] to-[#16A34A] text-white rounded-2xl py-4 text-xl font-bold text-center shadow-[0_4px_16px_rgba(34,197,94,0.35)] btn-press min-h-[56px]"
         >
           😊 打卡心情
         </Link>
         <Link
           href={`/task/${jobId}`}
-          className="w-full bg-white text-[#4F46E5] rounded-2xl py-4 text-xl font-semibold text-center shadow-[0_2px_8px_rgba(0,0,0,0.08)] btn-press min-h-[56px]"
+          className="w-full bg-white text-[#4F46E5] rounded-2xl py-4 text-xl font-bold text-center shadow-[0_2px_12px_rgba(0,0,0,0.06)] btn-press min-h-[56px] border border-indigo-100"
         >
           返回任务列表
+        </Link>
+        <Link
+          href="/"
+          className="w-full text-[#64748B] py-3 text-center btn-press text-base"
+        >
+          返回首页
         </Link>
       </div>
     </div>
@@ -133,7 +159,7 @@ function CompleteContent() {
 
 export default function CompletePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center"><p className="text-lg text-[#64748B]">加载中...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-lg text-[#64748B]">加载中...</p></div>}>
       <CompleteContent />
     </Suspense>
   );
