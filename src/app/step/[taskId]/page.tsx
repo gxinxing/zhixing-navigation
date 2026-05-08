@@ -120,6 +120,9 @@ function StepPageContent() {
     speak('已经通知辅导员，请稍等一下');
   }, [taskId, task, currentStep, speak]);
 
+  const handleHelp = useCallback(() => setShowHelp(true), []);
+  const handleCloseHelp = useCallback(() => setShowHelp(false), []);
+
   if (!task || !currentStepData) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
@@ -143,7 +146,7 @@ function StepPageContent() {
         progress={progress}
         onComplete={handleComplete}
         onReplay={handleReplay}
-        onHelp={() => setShowHelp(true)}
+        onHelp={handleHelp}
       />
 
       {showWellDone && (
@@ -160,7 +163,7 @@ function StepPageContent() {
           onUnclear={handleUnclear}
           onRedo={handleRedo}
           onCallHelp={handleCallHelp}
-          onClose={() => setShowHelp(false)}
+          onClose={handleCloseHelp}
         />
       )}
     </div>

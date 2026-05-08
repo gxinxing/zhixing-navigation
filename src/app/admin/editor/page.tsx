@@ -1,20 +1,36 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getJobTemplates, saveJobTemplates } from '@/lib/storage';
 import { JobTemplate, Step } from '@/types';
 
 export default function EditorPage() {
+  const router = useRouter();
+  const [authed, setAuthed] = useState(false);
   const [templates, setTemplates] = useState<JobTemplate[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string>('');
   const [editingTaskIndex, setEditingTaskIndex] = useState<number>(-1);
   const [previewMode, setPreviewMode] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('knowdo_admin') !== 'true') {
+      router.replace('/admin/login');
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
+    setAuthed(true);
     setTemplates(getJobTemplates());
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
+  }, [router]);
+
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <p className="text-lg text-[#64748B]">验证中...</p>
+      </div>
+    );
+  }
 
   const selectedJob = templates.find(j => j.id === selectedJobId);
   const editingTask = selectedJob && editingTaskIndex >= 0 ? selectedJob.tasks[editingTaskIndex] : null;

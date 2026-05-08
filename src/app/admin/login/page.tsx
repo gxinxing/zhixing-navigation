@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const ADMIN_PASSWORD = 'zhixing2024';
+const ADMIN_PASSWORD = 'knowdo2024';
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
@@ -11,7 +11,7 @@ export default function AdminLoginPage() {
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem('zhixing_admin', 'true');
+      sessionStorage.setItem('knowdo_admin', 'true');
       router.push('/admin');
     } else {
       setError(true);
@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
         </button>
 
         <p className="text-sm text-[#64748B] text-center mt-4">
-          提示：默认密码为 zhixing2024
+          提示：默认密码为 knowdo2024
         </p>
       </div>
     </div>

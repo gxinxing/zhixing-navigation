@@ -14,10 +14,10 @@ export function useTaskProgress(taskId: string, taskName: string, jobName: strin
     if (completingRef.current) return false;
     completingRef.current = true;
 
-    let advanced = false;
+    let result = false;
+
     setCurrentStep(prev => {
       if (prev < steps.length - 1) {
-        advanced = true;
         completingRef.current = false;
         return prev + 1;
       } else {
@@ -32,12 +32,13 @@ export function useTaskProgress(taskId: string, taskName: string, jobName: strin
           totalSteps: steps.length,
         });
         setIsComplete(true);
+        result = true;
         completingRef.current = false;
         return prev;
       }
     });
 
-    return !advanced;
+    return result;
   }, [steps.length, taskId, jobName, taskName, startTime]);
 
   const resetStep = useCallback(() => {

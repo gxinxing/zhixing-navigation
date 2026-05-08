@@ -3,7 +3,7 @@ import { memo } from 'react';
 import Link from 'next/link';
 import { JobTemplate } from '@/types';
 
-function JobCardInner({ job, delay }: { job: JobTemplate; delay: number }) {
+export default memo(function JobCard({ job }: { job: JobTemplate }) {
   return (
     <Link href={`/task/${job.id}`} className="block">
       <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-white/60 card-hover min-h-[140px] flex flex-col items-center justify-center gap-3 overflow-hidden group">
@@ -19,8 +19,4 @@ function JobCardInner({ job, delay }: { job: JobTemplate; delay: number }) {
       </div>
     </Link>
   );
-}
-
-export default memo(function JobCard({ job }: { job: JobTemplate }) {
-  return <JobCardInner job={job} delay={0} />;
 });

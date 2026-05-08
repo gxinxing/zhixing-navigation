@@ -4,6 +4,8 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getJobTemplates, getCompletionRecords } from '@/lib/storage';
 
+const encouragements = ['太棒了！🎉', '你做到了！✅', '继续加油！💪', '一步一步，你在进步！🌟'];
+
 function CompleteContent() {
   const searchParams = useSearchParams();
   const taskId = searchParams.get('taskId') || '';
@@ -11,8 +13,7 @@ function CompleteContent() {
   const [taskName, setTaskName] = useState('');
   const [taskIcon, setTaskIcon] = useState('');
   const [duration, setDuration] = useState('');
-  const encouragements = ['太棒了！🎉', '你做到了！✅', '继续加油！💪', '一步一步，你在进步！🌟'];
-  const [encouragement] = useState(() => encouragements[Math.floor(Math.random() * encouragements.length)]);
+  const [encouragement, setEncouragement] = useState(encouragements[0]);
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -33,6 +34,7 @@ function CompleteContent() {
       const mins = Math.round((end - start) / 60000);
       setDuration(mins > 0 ? `${mins} 分钟` : '不到1分钟');
     }
+    setEncouragement(encouragements[Math.floor(Math.random() * encouragements.length)]);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [taskId, jobId]);
 
@@ -116,7 +118,7 @@ function CompleteContent() {
       </div>
 
       <div className="relative z-10 animate-bounce-in">
-        <div className="bg-white/95 backdrop-blur-lg rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.1)] border border-white/80 p-8 w-full max-w-sm text-center">
+        <div className="bg-white/95 rounded-3xl shadow-[0_8px_40px_rgba(0,0,0,0.1)] border border-white/80 p-8 w-full max-w-sm text-center">
           <div className="text-8xl mb-4 animate-float">🎉</div>
           <h1 className="text-3xl font-bold text-[#1E293B] mb-2">{encouragement}</h1>
           <p className="text-lg text-[#64748B] mb-1">

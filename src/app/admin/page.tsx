@@ -1,17 +1,33 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getCompletionRecords, getHelpRecords, getMoodTrend } from '@/lib/storage';
 import { CompletionRecord, HelpRecord } from '@/types';
 
+const moodEmoji = (avg: number) => {
+  if (avg >= 4.5) return '😄';
+  if (avg >= 3.5) return '😊';
+  if (avg >= 2.5) return '😐';
+  if (avg >= 1.5) return '😟';
+  return '😰';
+};
+
 export default function AdminPage() {
+  const router = useRouter();
+  const [authed, setAuthed] = useState(false);
   const [stats, setStats] = useState({ completions: 0, helpCount: 0, avgTime: 0 });
   const [completions, setCompletions] = useState<CompletionRecord[]>([]);
   const [helpRecords, setHelpRecords] = useState<HelpRecord[]>([]);
   const [moodTrend, setMoodTrend] = useState<{ date: string; avg: number }[]>([]);
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && sessionStorage.getItem('knowdo_admin') !== 'true') {
+      router.replace('/admin/login');
+      return;
+    }
     /* eslint-disable react-hooks/set-state-in-effect */
+    setAuthed(true);
     const allCompletions = getCompletionRecords();
     const allHelpRecords = getHelpRecords();
     const today = new Date().toISOString().slice(0, 10);
@@ -27,15 +43,15 @@ export default function AdminPage() {
     setHelpRecords(allHelpRecords.slice(-20).reverse());
     setMoodTrend(getMoodTrend(7));
     /* eslint-enable react-hooks/set-state-in-effect */
-  }, []);
+  }, [router]);
 
-  const moodEmoji = (avg: number) => {
-    if (avg >= 4.5) return '😄';
-    if (avg >= 3.5) return '😊';
-    if (avg >= 2.5) return '😐';
-    if (avg >= 1.5) return '😟';
-    return '😰';
-  };
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <p className="text-lg text-[#64748B]">验证中...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] px-4 py-6">

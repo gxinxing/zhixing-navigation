@@ -8,7 +8,6 @@ import { JobTemplate } from '@/types';
 export default function HomePage() {
   const [jobs, setJobs] = useState<JobTemplate[]>([]);
   const [greeting, setGreeting] = useState('你好');
-  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
@@ -17,7 +16,6 @@ export default function HomePage() {
     if (hour < 12) setGreeting('早上好');
     else if (hour < 18) setGreeting('下午好');
     else setGreeting('晚上好');
-    setLoaded(true);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
@@ -48,7 +46,7 @@ export default function HomePage() {
       <div className="mt-8 relative z-10 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
         <Link
           href="/mood?context=before"
-          className="block bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.06)] card-hover flex items-center justify-center gap-3 border border-white/50"
+          className="block bg-white/90 rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.06)] card-hover flex items-center justify-center gap-3 border border-white/50"
         >
           <span className="text-3xl animate-float" style={{ animationDelay: '1.5s' }}>😊</span>
           <span className="text-lg font-semibold text-[#64748B]">今天感觉怎样？</span>

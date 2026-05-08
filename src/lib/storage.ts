@@ -1,7 +1,19 @@
 import { JobTemplate, CompletionRecord, MoodRecord, MoodType, HelpRecord } from '@/types';
 import { jobTemplates } from '@/data/templates';
 
-const PREFIX = 'zhixing_';
+const PREFIX = 'knowdo_';
+
+if (typeof window !== 'undefined') {
+  const oldKeys = ['zhixing_templates', 'zhixing_completions', 'zhixing_moods', 'zhixing_help'];
+  oldKeys.forEach(oldKey => {
+    const newKey = oldKey.replace('zhixing_', PREFIX);
+    const oldVal = window.localStorage.getItem(oldKey);
+    if (oldVal && !window.localStorage.getItem(newKey)) {
+      window.localStorage.setItem(newKey, oldVal);
+      window.localStorage.removeItem(oldKey);
+    }
+  });
+}
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);

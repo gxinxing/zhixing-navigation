@@ -21,10 +21,10 @@ export default memo(function StepCard({ step, currentStep, totalSteps, progress,
       <ProgressBar current={currentStep + 1} total={totalSteps} progress={progress} />
 
       <div className="flex-1 flex flex-col items-center justify-center mt-3 px-2">
-        <div className="w-full bg-white/90 backdrop-blur-sm rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/80 p-6 mb-5 flex items-center justify-center min-h-[35vh] relative overflow-hidden">
+        <div className="w-full bg-white rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-white/80 p-6 mb-5 flex items-center justify-center min-h-[35vh] relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-purple-50/30" />
           <div className="relative z-10">
-            <div className="text-7xl filter drop-shadow-lg animate-float">
+            <div className="text-7xl filter drop-shadow-lg">
               {emojiByPhase}
             </div>
           </div>
