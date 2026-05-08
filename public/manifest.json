@@ -1,10 +1,10 @@
 {
-  "name": "知行 - 岗位任务导航器",
-  "short_name": "知行",
-  "description": "把复杂工作流程变成跟着做的图文步骤卡片",
+  "name": "KnowDo - Job Task Navigator",
+  "short_name": "KnowDo",
+  "description": "Turn complex workflows into follow-along step cards for independent task completion",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F8FAFC",
+  "background_color": "#FFF8F0",
   "theme_color": "#4F46E5",
   "orientation": "portrait",
   "icons": [

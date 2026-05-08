@@ -40,7 +40,7 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] px-4 py-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#1E293B]">知行 · 辅导员后台</h1>
+        <h1 className="text-2xl font-bold text-[#1E293B]">KnowDo · 辅导员后台</h1>
         <Link href="/admin/editor" className="bg-[#4F46E5] text-white px-4 py-2 rounded-xl text-sm font-semibold btn-press">
           编辑模板
         </Link>

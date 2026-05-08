@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "知行 - 岗位任务导航器",
-  description: "把复杂工作流程变成跟着做的图文步骤卡片，让心智障碍者能独立完成岗位任务",
+  title: "KnowDo - 岗位任务导航器",
+  description: "KnowDo: 把复杂工作流程变成跟着做的图文步骤卡片，让心智障碍者能独立完成岗位任务",
   manifest: "/manifest.json",
 };
 
